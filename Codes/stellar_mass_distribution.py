@@ -28,7 +28,11 @@ bootesfile = main + '/BLDF/File/bootes_RGs_catalogue.csv'
 bootesbest = main + '/BLDF/File/Crossmatch/full_Bootes_Best_crossmatch.csv'
 bootesfluxfile = main + '/BLDF/File/bootes_GRG_flux.csv'
 
+<<<<<<< HEAD
+bootesdf = pd.read_csv(bootesfile, delimiter=',', usecols=('name', 'z', 'ztype', 'lls'))
+=======
 bootesdf = pd.read_csv(bootesfile, delimiter=',', usecols=('name', 'z', 'lls'))
+>>>>>>> a06345a (Initial commit)
 bootesbestdf = pd.read_csv(bootesbest, delimiter=',', usecols=('name','AGN_final', 'Mass_cons','SFR_cons'))
 bootesflux = pd.read_csv(bootesfluxfile, delimiter=',')
 
@@ -39,7 +43,11 @@ elaisfile = main + '/ELDF/File/en1_RGs_catalogue.csv'
 elaisbest = main + '/ELDF/File/Crossmatch/full_en1_Best_crossmatch.csv'
 elaisfluxfile = main + '/ELDF/File/en1_grg_flux.csv'
 
+<<<<<<< HEAD
+elaisdf = pd.read_csv(elaisfile, delimiter=',', usecols=('name', 'z', 'ztype', 'lls'))
+=======
 elaisdf = pd.read_csv(elaisfile, delimiter=',', usecols=('name', 'z', 'lls'))
+>>>>>>> a06345a (Initial commit)
 elaisbestdf = pd.read_csv(elaisbest, delimiter=',', usecols=('name', 'AGN_final', 'Mass_cons','SFR_cons'))
 elaisflux = pd.read_csv(elaisfluxfile, delimiter=',')
 
@@ -52,7 +60,11 @@ lhfile = main + '/LHLDF/File/lh_RGs_catalogue.csv'
 lhbest = main + '/LHLDF/File/Crossmatch/full_lh_Best_crossmatch.csv'
 lhfluxfile = main + '/LHLDF/File/lh_grg_flux.csv'
 
+<<<<<<< HEAD
+lhdf = pd.read_csv(lhfile, delimiter=',', usecols=('name', 'z', 'ztype', 'lls'))
+=======
 lhdf = pd.read_csv(lhfile, delimiter=',', usecols=('name', 'z', 'lls'))
+>>>>>>> a06345a (Initial commit)
 lhbestdf = pd.read_csv(lhbest, delimiter=',', usecols=('name','AGN_final', 'Mass_cons','SFR_cons'))
 lhfluxdf = pd.read_csv(lhfluxfile, delimiter=',')
 
@@ -62,6 +74,11 @@ lhdf = pd.merge(lhdf, lhfluxdf, on=['name'], how='left')
 
 df = pd.concat([bootesdf, elaisdf, lhdf])
 
+<<<<<<< HEAD
+df = df[df.ztype=='s']
+
+=======
+>>>>>>> a06345a (Initial commit)
 dfgrg = df[df.lls >= 0.7]
 dfrg = df[df.lls < 0.7]
 
