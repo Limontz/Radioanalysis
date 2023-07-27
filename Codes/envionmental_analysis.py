@@ -30,9 +30,10 @@ main = '/Users/marco/Desktop/The_Master/PhD/GRG Project/'
 file = main + 'BLDF/File/bootes_RGs_catalogue.csv'
 desi_file = main + 'BLDF/File/DESI_Bootes-photo-z.csv'
 
-bootesdf = pd.read_csv(file, delimiter=None, usecols=('name', 'ra', 'dec', 'z', 'zstd', 'lls'))
+bootesdf = pd.read_csv(file, delimiter=None, usecols=('name', 'ra', 'dec', 'z', 'ztype', 'zstd', 'lls'))
 bootesdesi = pd.read_csv(desi_file, delimiter=None, usecols=('ra', 'dec', 'dered_mag_r', 'z_phot_mean', 'z_spec', 'z_phot_std'))
 
+bootesdf = bootesdf[bootesdf.ztype == 's']
 
 bootesdesi['z_phot_mean'] = np.where(bootesdesi['z_spec'] > 0, bootesdesi['z_spec'], bootesdesi['z_phot_mean'])
 bootesdesi = bootesdesi[bootesdesi['z_phot_mean']>0]
@@ -45,9 +46,10 @@ bootesdesi = bootesdesi[bootesdesi['z_phot_mean']>0]
 elaisfile = main + '/ELDF/File/en1_RGs_catalogue.csv'
 desifile = main + '/ELDF/FILE/Elais-DESI-photo-z.csv'
 
-elaisdf = pd.read_csv(elaisfile, delimiter=',', usecols=('name', 'ra', 'dec', 'z', 'zstd', 'lls'))
+elaisdf = pd.read_csv(elaisfile, delimiter=',', usecols=('name', 'ra', 'dec', 'z', 'ztype', 'zstd', 'lls'))
 elaisdesi = pd.read_csv(desifile, delimiter=',', usecols=('ra', 'dec', 'dered_mag_r', 'z_phot_mean', 'z_spec', 'z_phot_std'))
 
+elaisdf = elaisdf[elaisdf.ztype == 's']
 elaisdesi['z_phot_mean'] = np.where(elaisdesi['z_spec'] > 0, elaisdesi['z_spec'], elaisdesi['z_phot_mean'])
 elaisdesi = elaisdesi[elaisdesi['z_phot_mean']>0]
 
@@ -56,9 +58,10 @@ elaisdesi = elaisdesi[elaisdesi['z_phot_mean']>0]
 lhfile = main + '/LHLDF/File/lh_RGs_catalogue.csv'
 desifile = main + '/LHLDF/FILE/DESI-LH_photo-z.csv'
 
-lhdf = pd.read_csv(lhfile, delimiter=',', usecols=('name', 'ra', 'dec', 'z', 'zstd', 'lls'))
+lhdf = pd.read_csv(lhfile, delimiter=',', usecols=('name', 'ra', 'dec', 'z','ztype', 'zstd', 'lls'))
 lhdesi = pd.read_csv(desifile, delimiter=',', usecols=('ra', 'dec', 'dered_mag_r', 'z_phot_mean', 'z_spec', 'z_phot_std'))
 
+lhdf = lhdf[lhdf.ztype == 's']
 lhdesi['z_phot_mean'] = np.where(lhdesi['z_spec'] > 0, lhdesi['z_spec'], lhdesi['z_phot_mean'])
 lhdesi = lhdesi[lhdesi['z_phot_mean']>0]
 
@@ -130,7 +133,7 @@ df_3df = pd.DataFrame({'name': np.concatenate((bootes_df.name, np.concatenate( (
                        'lls': np.concatenate((bootes_df.lls,np.concatenate( (elais_df.lls,lh_df.lls ), axis=None)), axis=None)})
 
 
-df_3df.to_csv(main + '/File/total_ngalaxies.csv')
+df_3df.to_csv(main + '/File/spec_photo_total_ngalaxies.csv')
 
 exit()
 binwidth = 10

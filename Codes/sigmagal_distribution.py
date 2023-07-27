@@ -18,7 +18,7 @@ from scipy.stats import ks_2samp
 import math
 
 main = '/Users/marco/Desktop/The_Master/PhD/GRG Project'
-file = main + '/File/total_ngalaxies.csv'
+file = main + '/File/spec_spec_total_ngalaxies.csv'
 
 df = pd.read_csv(file)
 
@@ -39,6 +39,8 @@ fig1.subplots_adjust(top=0.990,bottom=0.125,left=0.165,right=0.990,hspace=0.2,ws
 #
 rg = df['ngalaxies'][df['lls'] < 0.5]
 grg = df['ngalaxies'][df['lls'] >= 0.5]
+
+print(len(rg), len(grg))
 
 print(np.mean(rg), np.mean(grg), np.max(rg), np.max(grg) )
 print(ks_2samp(rg, grg))

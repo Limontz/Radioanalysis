@@ -62,9 +62,24 @@ lhdf = pd.merge(lhdf, lhfluxdf, on=['name'], how='left')
 
 df = pd.concat([bootesdf, elaisdf, lhdf])
 
+
+df = df[~np.isnan(df.SFR_cons)]
+df = df[df.SFR_cons > -10]
+
 dfgrg = df[df.lls >= 0.7]
 dfrg = df[df.lls < 0.7]
 
+print(len(dfgrg.name), len(dfrg.name))
+dfgrg = dfgrg[dfgrg['AGN_final']==1]
+dfrg = dfrg[dfrg['AGN_final']==1]
+print(len(dfgrg.name), len(dfrg.name))
+exit()
+print(ks_2samp(dfgrg.z, dfrg.z))
+
+sns.histplot(dfrg.z, bins = 30, color = 'darkred', zorder=2, label = 'RGs')
+sns.histplot(dfgrg.z, bins = 30, color = 'darkblue', zorder=3, label = 'GRGs', alpha = 0.5)
+plt.show()
+exit()
 
 star_mass_grg = np.array(dfgrg.Mass_cons)
 star_mass_grg = star_mass_grg[~np.isnan(star_mass_grg)]
@@ -93,11 +108,13 @@ binwidth = 0.35
 xymax = max(np.max(np.abs(sfr_grg)), np.max(np.abs(sfr_rg)))
 lim = (int(xymax/binwidth) + 1) * binwidth
 
-print(len(sfr_grg))
-print('sfr > 1:', (np.array(sfr_grg) > 1).sum())
-print(len(sfr_grg))
+print(len(sfr_rg))
+print('sfr > 1:', (np.array(sfr_rg) > 1).sum())
+# print(len(sfr_grg))
 
 print(ks_2samp(sfr_rg, sfr_grg))
+print(np.mean(sfr_rg), np.mean(sfr_grg))
+print(np.std(sfr_rg), np.std(sfr_grg))
 
 bins = np.arange(-lim, lim + binwidth, binwidth)
 fig = plt.figure(figsize = (6, 6))

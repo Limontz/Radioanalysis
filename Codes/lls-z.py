@@ -24,6 +24,11 @@ lhdf = pd.read_csv(lhfile, delimiter=',', usecols=('name', 'z', 'lls'))
 
 df = pd.concat([bootesdf, elaisdf, lhdf])
 
+df = df[df.lls >= 0.5]
+df = df[df.z <= 0.7]
+print(df.lls)
+exit()
+
 fig = plt.figure(figsize = (6, 6))
 fig.subplots_adjust(top=0.990,bottom=0.125,left=0.165,right=0.990,hspace=0.2,wspace=0.2)
 

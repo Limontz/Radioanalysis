@@ -18,7 +18,7 @@ bootesfile = main + '/BLDF/File/bootes_GRGs_catalogue.csv'
 bootesbest = main + '/BLDF/File/Crossmatch/full_Bootes_Best_crossmatch.csv'
 bootesfluxfile = main + '/BLDF/File/bootes_GRG_flux.csv'
 
-bootesdf = pd.read_csv(bootesfile, delimiter=',', usecols=('name', 'z', 'lls'))
+bootesdf = pd.read_csv(bootesfile, delimiter=',', usecols=('name', 'z', 'ztype', 'lls'))
 bootesbestdf = pd.read_csv(bootesbest, delimiter=',', usecols=('name','AGN_final', 'Mass_cons','SFR_cons'))
 bootesflux = pd.read_csv(bootesfluxfile, delimiter=',')
 
@@ -29,7 +29,7 @@ elaisfile = main + '/ELDF/File/en1_GRGs_catalogue.csv'
 elaisbest = main + '/ELDF/File/Crossmatch/full_en1_Best_crossmatch.csv'
 elaisfluxfile = main + '/ELDF/File/en1_grg_flux.csv'
 
-elaisdf = pd.read_csv(elaisfile, delimiter=',', usecols=('name', 'z', 'lls'))
+elaisdf = pd.read_csv(elaisfile, delimiter=',', usecols=('name', 'z', 'ztype','lls'))
 elaisbestdf = pd.read_csv(elaisbest, delimiter=',', usecols=('name', 'AGN_final', 'Mass_cons','SFR_cons'))
 elaisflux = pd.read_csv(elaisfluxfile, delimiter=',')
 
@@ -42,7 +42,7 @@ lhfile = main + '/LHLDF/File/lh_GRGs_catalogue.csv'
 lhbest = main + '/LHLDF/File/Crossmatch/full_lh_Best_crossmatch.csv'
 lhfluxfile = main + '/LHLDF/File/lh_grg_flux.csv'
 
-lhdf = pd.read_csv(lhfile, delimiter=',', usecols=('name', 'z', 'lls'))
+lhdf = pd.read_csv(lhfile, delimiter=',', usecols=('name', 'z', 'ztype', 'lls'))
 lhbestdf = pd.read_csv(lhbest, delimiter=',', usecols=('name','AGN_final', 'Mass_cons','SFR_cons'))
 lhfluxdf = pd.read_csv(lhfluxfile, delimiter=',')
 
@@ -50,6 +50,9 @@ lhdf = pd.merge(lhdf, lhbestdf, on=['name'], how='left')
 lhdf = pd.merge(lhdf, lhfluxdf, on=['name'], how='left')
 
 df = pd.concat([bootesdf, elaisdf, lhdf])
+
+# df = df[df.ztype=='s']
+# df = df[df.lls > 1]
 
 df = df[df.SFR_cons > -10]
 
@@ -59,39 +62,41 @@ alpha = 0.7
 df['power'] = 4. * np.pi * (1 + df.z)**(alpha - 1) * (df.flux/1e3) *  ((cosmo.luminosity_distance(df.z) * Mpc_to_m / u.Mpc)**2) * Jy_to_W   #units W
 df['sSFR'] = 10**(df.SFR_cons)/df.Mass_cons
 df['sSFR'] = 10**(df.SFR_cons)/df.Mass_cons
+# df = df.sort_values('flux', ascending=False)
+# # print(df.flux)
+# df.to_csv(main+'/File/GRGs_GMRT_candidates.csv')
+# exit()
 
+# model = LinearRegression().fit(np.array(df.SFR_cons).reshape((-1, 1)), np.log10(np.array(df.power)))
+# print(f"intercept: {model.intercept_}")
+# print(f"slope: {model.coef_}")
+# print(f"coefficient of determination:", model.score(np.array(df.SFR_cons).reshape((-1, 1)), np.log10(np.array(df.power))))
+# y_pred = 10**model.predict(np.array(df.SFR_cons).reshape((-1, 1)))
+# params = np.append(model.intercept_,model.coef_)
 
-model = LinearRegression().fit(np.array(df.SFR_cons).reshape((-1, 1)), np.log10(np.array(df.power)))
-print(f"intercept: {model.intercept_}")
-print(f"slope: {model.coef_}")
-print(f"coefficient of determination:", model.score(np.array(df.SFR_cons).reshape((-1, 1)), np.log10(np.array(df.power))))
-y_pred = 10**model.predict(np.array(df.SFR_cons).reshape((-1, 1)))
-params = np.append(model.intercept_,model.coef_)
+# slope, intercept, r_value, p_value, std_err = linregress(df.SFR_cons,  np.log10(np.array(df.power)))
+# r_squared = r_value ** 2
+# print("R-squared:", r_squared)
+# print("p-value:", p_value)
 
-slope, intercept, r_value, p_value, std_err = linregress(df.SFR_cons,  np.log10(np.array(df.power)))
-r_squared = r_value ** 2
-print("R-squared:", r_squared)
-print("p-value:", p_value)
+# #partial correlation
 
-#partial correlation
+# # Calculate the correlation between X and Y
+# df.power = np.log10(df.power)
+# print(pg.partial_corr(data=df, x='SFR_cons',y='power', covar='z'))
 
-# Calculate the correlation between X and Y
-df.power = np.log10(df.power)
-print(pg.partial_corr(data=df, x='SFR_cons',y='power', covar='z'))
+# df2 = pd.DataFrame({'x':df.SFR_cons,'y':np.log10(df.power), 'z':df.z })
+# print(df2.corr())
 
-df2 = pd.DataFrame({'x':df.SFR_cons,'y':np.log10(df.power), 'z':df.z })
-print(df2.corr())
-
-print(pg.rcorr(df2))
+# print(pg.rcorr(df2))
 
 
 
 df_herg = df[df['AGN_final']==1]
 df_herg = df[df['AGN_final']==1]
-
+print(len(df_herg))
 df_lerg = df[df['AGN_final']==0]
 df_lerg = df[df['AGN_final']==0]
-
 
 
 def scatter_hist(x, y, ax, ax_histx, ax_histy):
@@ -115,9 +120,11 @@ def scatter_hist(x, y, ax, ax_histx, ax_histy):
 fig = plt.figure(figsize = (6, 6))
 fig.subplots_adjust(top=0.990,bottom=0.125,left=0.165,right=0.990,hspace=0.2,wspace=0.2)
 
-plt.scatter(df_herg.SFR_cons, df_herg.power, marker='.', s = 100, edgecolors='black', facecolors='blue', label='HERG')
+x = [np.min(df.SFR_cons), np.max(df.SFR_cons)]
+y = [10**26, 10**26]
 plt.scatter(df_lerg.SFR_cons, df_lerg.power, marker='.', s = 100, edgecolors='black', facecolors='orange', label='LERG')
-# plt.plot(df.SFR_cons, y_pred)
+plt.scatter(df_herg.SFR_cons, df_herg.power, marker='.', s = 100, edgecolors='black', facecolors='blue', label='HERG')
+plt.plot(x, y, marker ='', color='red', linewidth = 2.0)
 # plt.scatter(df.SFR_cons, df.power, marker='.', s = 100, label='HERG', c = df.z, cmap='viridis')
 # plt.plot(df.z, df.SFR_cons, marker ='.', linestyle ='')
 plt.xticks(fontsize = 15)
@@ -125,7 +132,7 @@ plt.yticks(fontsize = 15)
 plt.xlabel(r'$Log(SFR [M_{\odot} \ yr^{-1}])$', fontsize=15)
 plt.ylabel(r'$ P_{150} [W \ Hz^{-1}] $', fontsize=15)
 plt.legend(fontsize=12)
-# plt.yscale('log')
+plt.yscale('log')
 # plt.colorbar()
 
 # ax_histx = fig.add_axes(rect_histx, sharex=ax)
