@@ -59,7 +59,8 @@ file = main + 'apt_LH_rgs.csv'
 
 dfgrg = pd.read_csv(rgfile, delimiter=",", usecols=('name', 'ra', 'dec', 'las', 'z', 'lls'))
 df = pd.read_csv(file)
-
+print(df.name[36,21])
+exit()
 df = pd.merge(df['name'], dfgrg[['name','ra', 'dec', 'las']], on='name')
 
 for i in range(len(df.name)):
